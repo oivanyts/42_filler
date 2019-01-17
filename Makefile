@@ -10,7 +10,7 @@
 #                                                                              #
 # **************************************************************************** #
 
-NAME 		= filler
+NAME 		= bot.filler
 
 SRC_DIR		:= ./src/
 OBJ_DIR 	:= ./obj/
@@ -38,7 +38,7 @@ OBJ 		= $(addprefix $(OBJ_DIR), $(SRC:.c=.o))
 all: $(NAME)
 
 $(NAME): $(OBJ) $(LIBFT)
-	gcc obj/filler.o -lft -L libft -o filler
+	gcc obj/filler.o -lft -L libft -o $(NAME)
 
 $(OBJ): | $(OBJ_DIR)
 
@@ -49,7 +49,7 @@ $(OBJ_DIR)%.o: %.c
 	$(CC) -c $< -o $@ $(FLAGS) $(HEADER_FLAGS);
 
 $(LIBFT):
-	make -C $(LIB_DIR)
+	@echo libft
 
 clean:
 	@rm -f $(OBJ)
@@ -58,7 +58,7 @@ clean:
 fclean: clean
 	rm -f $(NAME)
 	rm -rf $(OBJ_DIR)
-	@make fclean -C $(LIB_DIR)
+#	@make fclean -C $(LIB_DIR)
 
 re: fclean all
 

@@ -9,6 +9,6 @@ set(SOURCE_FILES
         src/filler.c
         includes/filler_header.h
         )
-add_executable(filler ${SOURCE_FILES})
+add_executable(bot.filler ${SOURCE_FILES})
 
-target_link_libraries(filler ${CMAKE_SOURCE_DIR}/libft/libft.a)
+target_link_libraries(bot.filler ${CMAKE_SOURCE_DIR}/libft/libft.a)
