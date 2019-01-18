@@ -13,6 +13,15 @@
 #ifndef FILLER_HEADER_H
 # define FILLER_HEADER_H
 
+# define TRUE 1
+# define FALSE 0
+
+# include <stdbool.h>
 # include "../libft/includes/libftprintf.h"
 
+int		g_x_max;
+int 	g_y_max;
+int		g_x_patr;
+int		g_y_part;
+char	g_dot;
 #endif

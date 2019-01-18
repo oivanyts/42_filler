@@ -42,17 +42,18 @@ char				*ft_itoa_prntf(long long int n, t_format fx);
 char				*ft_itoa_double(long double num, t_format fx);
 long double			ft_round_double(long double num, int precision);
 long double			ft_exp(int num, int exp);
-int					ft_putchar_u(int c);
-int					ft_putstr_u(wchar_t *s);
+int					ft_putchar_u(int c, int fd);
+int					ft_putstr_u(wchar_t *s, int fd);
 wchar_t				*ft_strndup_u(wchar_t *src, size_t n);
 int					ft_charlen(wchar_t c);
-int					ft_parcer_printf(const char **str, va_list arg);
+int					ft_parcer_printf(const char **str, va_list arg, int fd);
 void				zero_struct(t_format *list);
-int					formated_print(va_list arg, t_format fx);
-int					format_char(va_list arg, t_format fx);
+int					formated_print(va_list arg, t_format fx, int fd);
+int					format_char(va_list arg, t_format fx, int fd);
 char				*form_numbers(va_list arg, t_format fx);
 char				*ft_printbits(char *str, t_format fx);
 char				*ft_check_color(const char *str);
 void				ft_color_input(char *color);
+int					ft_printf_fd(int fd, const char *format, ...);
 
 #endif

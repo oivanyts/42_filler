@@ -75,7 +75,7 @@ static char	f_flags(const char **flag, t_format *list)
 	return (0);
 }
 
-int			ft_parcer_printf(const char **str, va_list arg)
+int			ft_parcer_printf(const char **str, va_list arg, int fd)
 {
 	t_format	fx;
 
@@ -97,7 +97,7 @@ int			ft_parcer_printf(const char **str, va_list arg)
 		{
 			fx.type = **str;
 			*str += 1;
-			return (formated_print(arg, fx));
+			return (formated_print(arg, fx, fd));
 		}
 	}
 	return (0);

@@ -12,14 +12,14 @@
 
 #include "../includes/libftprintf.h"
 
-int	ft_putstr_u(wchar_t *s)
+int	ft_putstr_u(wchar_t *s, int fd)
 {
 	int n;
 
 	n = 0;
 	while (*s)
 	{
-		n += ft_putchar_u(*s);
+		n += ft_putchar_u(*s, fd);
 		s++;
 	}
 	return (n);
