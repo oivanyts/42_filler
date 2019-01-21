@@ -20,7 +20,7 @@ static int				count_dig(long double num, t_format fx)
 		num *= -1.0;
 	if (num >= 1.0)
 	{
-		while (num > 1.0 && num > 10.0)
+		while (num > 1.0 && num >= 10.0)
 		{
 			num /= 10.0;
 			count++;
@@ -121,11 +121,11 @@ char					*ft_itoa_double(long double num, t_format fx)
 	if ((len = count_dig(num, fx)) > INT_MIN && fx.precs < 0)
 		fx.precs = 6;
 	n = (size_t)str_ready(&str, fx, ((fx.type == 'f' ? len + fx.precs + 1 :
-		fx.precs + 2 + ft_num_size(len)) + ((num < 0.) || fx.flag[1] == '+')));
+	fx.precs + 2 + ft_num_size(len)) + ((num < 0.) || fx.flag[1] == '+')));
 	if (fx.flag[0] == '-')
 		n = 0;
 	if (fx.flag[2] == ' ' && ((fx.flag[0] == '-' && num > 0. && n++) ||
-	fx.flag[3] == '0'))
+							  fx.flag[3] == '0'))
 		str[0] = ' ';
 	if (num < 0.0 && (num *= -1))
 		fx.flag[1] = '-';
@@ -135,7 +135,8 @@ char					*ft_itoa_double(long double num, t_format fx)
 	if (fx.flag[1] == '+' || fx.flag[1] == '-')
 		str[(fx.flag[3] == '0' && n++ ? 0 : (n++))] = fx.flag[1];
 	num = str_to_dot(num, &str[n], (len - 1) * (fx.type == 'f') + 1, fx.precs);
-	str_end(num, &str[len * (fx.type != 'e') + (fx.precs) + (fx.type == 'e') +
-	n], fx.precs, INT_MIN * (fx.type != 'e') + (len) * (fx.type == 'e'));
+	str_end(num, &str[len * (fx.type != 'e') + (fx.precs > 0) + (fx.type == 'e')
+	+ n], fx.precs, INT_MIN * (fx.type != 'e') + (len) * (fx.type == 'e'));
 	return (str);
 }
+

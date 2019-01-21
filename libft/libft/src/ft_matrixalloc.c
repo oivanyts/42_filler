@@ -12,7 +12,16 @@
 
 #include "../includes/libft.h"
 
-void	**ft_matrixalloc(size_t width, size_t length, size_t buf)
+static void	row_zero(int *row, size_t lenth)
+{
+	size_t n;
+
+	n = 0;
+	while (n < lenth)
+		row[n++] = 0;
+}
+
+void		**ft_matrixalloc(size_t width, size_t length, size_t buf)
 {
 	void	**matrix;
 	size_t	n;
@@ -21,10 +30,13 @@ void	**ft_matrixalloc(size_t width, size_t length, size_t buf)
 	if (!(matrix = malloc(8 * width)))
 		return (NULL);
 	while (width-- > 0)
-		if (!(matrix[n++] = malloc(length * buf)))
+		if (!(matrix[n] = malloc(length * buf)))
 		{
 			free(matrix);
 			return (NULL);
 		}
+		else
+			row_zero(matrix[n++], length);
+
 	return (matrix);
 }

@@ -15,13 +15,16 @@
 
 # define TRUE 1
 # define FALSE 0
+# define ENEMY -9
+# define FRIEND -1
 
 # include <stdbool.h>
 # include "../libft/includes/libftprintf.h"
 
-int		g_x_max;
-int 	g_y_max;
-int		g_x_patr;
-int		g_y_part;
+int		g_mapsize[2];
+int		g_patr[2];
+double 	**g_field;
 char	g_dot;
+
+int 	fd;
 #endif

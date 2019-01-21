@@ -11,18 +11,19 @@
 /* ************************************************************************** */
 
 #include "../includes/filler_header.h"
+#include <math.h>
 
-void	print_matr(int **matr, int fd)
+static void	print_matr(double **matr, int fd)
 {
 	int i = 0, j;
-	ft_printf_fd(fd, "\t  0  1  2  3  4  5  6  7  8  9  0  1  2  3  4  5  6  \n");
-	while (i < g_x_max)
+	ft_printf_fd(fd, "\t   0   1   2   3   4   5   6   7   8   9   0   1   2   3   4   5  6\n");
+	while (i < g_mapsize[0])
 	{
 		ft_printf_fd(fd, "%d\t{ ", i);
 		j = 0;
-		while (j < g_y_max)
+		while (j < g_mapsize[1] && **matr)
 		{
-			ft_printf_fd(fd, "%d, ", matr[i][j]);
+			ft_printf_fd(fd, "%4.f", g_field[i][j]);
 			j++;
 		}
 		i++;
@@ -31,97 +32,140 @@ void	print_matr(int **matr, int fd)
 	ft_printf_fd(fd, "MATRIX PRINTED\n");
 }
 
-int 	**map_scan(int fd)
+long long	ft_abs(long long num)
 {
-	int	**matr;
-//	char **map;
+	return num >= 0 ? num : -num;
+}
+
+
+static double			mesure_distance(int ax, int ay, int bx, int by)
+{
+	return (sqrt((double)((ax - bx) * (ax - bx) + (ay - by) * (ay - by))));
+}
+void		mark_field(int x, int y)
+{
+	int	i;
+	int	j;
+	int current;
+
+	i = 0;
+	while (i < g_mapsize[0])
+	{
+		j = 0;
+		while (j < g_mapsize[1])
+		{
+
+			if (((g_field[i][j] > (current = mesure_distance(i + 1, j + 1, x + 1, y + 1))) && g_field[i][j] > 0) || g_field[i][j] == 0)
+			{
+				g_field[i][j] = current;
+				j++;
+			}
+//			else if (g_field[i][j] >= 0)
+//				j += y;
+//			else
+				j++;
+		}
+		i++;
+	}
+//	print_matr(g_field, fd);
+
+}
+
+double 		**map_scan(int fd)
+{
 	int x = 0;
 	char *tmp;
 	int y;
-	matr = (int **)ft_matrixalloc(g_x_max, g_y_max + 1, 1);
-	ft_printf_fd(fd, "MATRIX START\n");
+	int new_enemyes;
+
+	new_enemyes = 0;
 	get_next_line(0, &tmp);
-	ft_printf_fd(fd, "%-35s\n", tmp);
-	while (x < g_x_max && get_next_line(0, &tmp))
+	free(tmp);
+	ft_printf_fd(fd, "<<< %-35s\n", tmp);
+
+	while (x < g_mapsize[0] && get_next_line(0, &tmp))
 	{
-		y    = 0;
+		y = 0;
 		ft_printf_fd(fd, "%-35s\n", tmp);
-		while (y < g_y_max + 4)
+		while (y < g_mapsize[1])
 		{
-//			ft_printf_fd(fd, " fail %d:%d\n", x, y);
-			if (tmp[4 + y] == '.')
+			if (tmp[4 + y] == 'O' || tmp[4 + y] == 'o')
 			{
-				matr[x][y] = 0;
+				g_field[x][y] = ENEMY;
+				mark_field(x, y);
 			}
-			else if (tmp[4 + y] == 'O')
-			{
-				matr[x][y] = 5;
-			}
-			else
-				matr[x][y] = 3;
+
+			else if (tmp[4 +  y] == 'X' || tmp[4 + y] == 'x')
+				g_field[x][y] = FRIEND;
 			y++;
 		}
 		x++;
+		free(tmp);
 	}
 	ft_printf_fd(fd, "MATRIX WRITEN\n");
-	print_matr(matr, fd);
-	return (matr);
+	print_matr(g_field, fd);
+	return (g_field);
 }
 
-static char	**fillit_parser(int x)
+void		first_line(char *line, int fd)
+{
+	char	*tmp;
+	if (line[10] == '1')
+		g_dot = (char) 'o';
+	else if (line[10] == '2')
+		g_dot = (char) 'x';
+	get_next_line(0, &tmp);
+	if (ft_strstr(tmp, "Plateau "))
+	{
+		g_mapsize[0] = ft_atoi(&tmp[7]);
+		g_mapsize[1] = ft_atoi(&tmp[8 + ft_num_size(g_mapsize[0])]);
+		g_field = (double **)ft_matrixalloc(g_mapsize[0], g_mapsize[1], sizeof(double));
+		ft_printf_fd(fd, "MATRIX ALLOCATED\n");
+		ft_printf_fd(fd, "MATRIX START\n gxm - %d, gym - %d\n", g_mapsize, g_mapsize[1]);
+		print_matr(g_field, fd);
+		g_field = map_scan(fd);
+	}
+}
+
+static char	**fillit_parser(int fd)
 {
 	char	*line;
 	int		ret;
-	int 	**map;
 	int 	count;
-	int fd;
 
-	fd = open("test.txt", O_RDWR, S_IRWXO);
 
 	ret = 0;
-	count = x;
-//	my = 0;
+	count = 2;
 	while (count >= 0)
 	{
 		ret += get_next_line(0, &line);
 		ft_printf_fd(fd, "%-35s\t- %d\n", line, ret);
 		if (ft_strstr(line, "$$$ exec p"))
-		{		if (line[10] == '1')
-				g_dot = (char) 'o';
-			else if (line[10] == '2')
-				g_dot = (char) 'x';
-		}
+			first_line(line, fd);
 		else if (ft_strstr(line, "Plateau "))
-		{
-			g_x_max = ft_atoi(&line[7]);
-			g_y_max = ft_atoi(&line[8 + ft_num_size(g_x_max)]);
-			count = g_y_max;
-			map = map_scan(fd);
-
-		}
+			g_field = map_scan(fd);
 		else if (ft_strstr(line, "Piece "))
 		{
-			g_x_patr = ft_atoi(&line[6]);
-			g_y_part = ft_atoi(&line[6 + ft_num_size(g_x_patr)]);
-			count = g_y_part;
+			g_patr[0] = ft_atoi(&line[6]);
+			g_patr[1] = ft_atoi(&line[6 + ft_num_size(g_patr[0])]);
+			count = g_patr[1];
 		}
 		if (!count--)
 		{
-			ft_printf_fd(fd, "%c mapsize [%d]x[%d]\npart x%d y%d\n new %d\n", g_dot, g_x_max, g_y_max, g_x_patr, g_y_part, ret);
+			ft_printf_fd(fd, "%c mapsize [%d]x[%d]\npart x%d y%d\n new %d\n", g_dot, g_mapsize[0], g_mapsize[1], g_patr[0], g_patr[1], ret);
 			ft_printf_fd(1, "12 14\n");
 			count++;
 		}
 	}
-	close(fd);
+
 	return NULL;
 }
 
 int		main()
 {
 
-	char	**raw_map;
-
-
-	raw_map = fillit_parser(2);
+	fd = open("test.txt", O_RDWR, S_IRWXO);
+	fillit_parser(fd);
+	close(fd);
 	return (0);
 }
