@@ -21,10 +21,26 @@
 # include <stdbool.h>
 # include "../libft/includes/libftprintf.h"
 
-int		g_mapsize[2];
-int		g_patr[2];
-double 	**g_field;
+struct coordinates
+{
+	int8_t x;
+	int8_t y;
+};
+
+
+
+struct coordinates	g_mapsize;
+struct coordinates	g_new_part;
+struct coordinates	g_friend_start;
+struct coordinates	g_friend_finish;
+struct coordinates	g_best_result;
+
+float **g_field;
+int32_t	**g_newfigure;
+float g_best_sum;
+
 char	g_dot;
 
 int 	fd;
+int 	fd1;
 #endif

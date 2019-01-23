@@ -13,24 +13,54 @@
 #include "../includes/filler_header.h"
 #include <math.h>
 
-static void	print_matr(double **matr, int fd)
+/*
+ * prints matrix to
+ */
+
+//static void	print_matr(int fd)
+//{
+//	int i = 0;
+//	int	j;
+//	ft_printf_fd(fd, "\t   0\t1\t 2\t  3\t   4\t5\t 6\t  7\t   8\t 9\t 0\t  1\t  2\t    3\t 4\t 5\t   6\n ");
+//	while (i < g_mapsize.x)
+//	{
+//		j = 0;
+//		ft_printf_fd(fd, "%d\t{", i);
+//		while (j < g_mapsize.y)
+//		{
+//			ft_printf_fd(fd, "%7.2f", g_field[i][j]);
+//			j++;
+//		}
+//		i++;
+//		ft_printf_fd(fd, "}\n");
+//	}
+//	ft_printf_fd(fd, "MATRIX PRINTED\n");
+//}
+
+static void	print_matr(int fd, float **matr, int8_t matr_x, int8_t matr_y)
 {
-	int i = 0, j;
-	ft_printf_fd(fd, "\t   0   1   2   3   4   5   6   7   8   9   0   1   2   3   4   5  6\n");
-	while (i < g_mapsize[0])
+	int i = 0;
+	int	j;
+
+	ft_printf_fd(fd, "\n\tMATRIX [%d]:[%d]\n", matr_x, matr_y);
+	while (i < matr_x)
 	{
-		ft_printf_fd(fd, "%d\t{ ", i);
 		j = 0;
-		while (j < g_mapsize[1] && **matr)
+		ft_printf_fd(fd, "%d\t{ ", i);
+		while (j < matr_y)
 		{
-			ft_printf_fd(fd, "%4.f", g_field[i][j]);
+			ft_printf_fd(fd, "%5d", (int)matr[i][j]);
 			j++;
 		}
 		i++;
 		ft_printf_fd(fd, "}\n");
 	}
-	ft_printf_fd(fd, "MATRIX PRINTED\n");
+	ft_printf_fd(fd, "\tMATRIX PRINTED\n\n");
 }
+
+/*
+ * add this to libary
+ */
 
 long long	ft_abs(long long num)
 {
@@ -38,73 +68,156 @@ long long	ft_abs(long long num)
 }
 
 
-static double			mesure_distance(int ax, int ay, int bx, int by)
+static float			mesure_distance(int ax, int ay, int bx, int by)
 {
-	return (sqrt((double)((ax - bx) * (ax - bx) + (ay - by) * (ay - by))));
+	return ((sqrtf((float)((ax - bx) * (ax - bx) + (ay - by) * (ay - by)))));
 }
+
 void		mark_field(int x, int y)
 {
-	int	i;
-	int	j;
-	int current;
+	int8_t	i;
+	int8_t	j;
+	float current;
 
 	i = 0;
-	while (i < g_mapsize[0])
+	while (i < g_mapsize.x)
 	{
 		j = 0;
-		while (j < g_mapsize[1])
+		while (j < g_mapsize.y)
 		{
-
-			if (((g_field[i][j] > (current = mesure_distance(i + 1, j + 1, x + 1, y + 1))) && g_field[i][j] > 0) || g_field[i][j] == 0)
-			{
+			current = mesure_distance(i, j, x, y);
+			if ((g_field[i][j] > 0 && (g_field[i][j] > current)) || g_field[i][j] == 0)
 				g_field[i][j] = current;
-				j++;
-			}
-//			else if (g_field[i][j] >= 0)
-//				j += y;
-//			else
-				j++;
+			j++;
 		}
 		i++;
 	}
 //	print_matr(g_field, fd);
-
 }
 
-double 		**map_scan(int fd)
+int16_t valid_sum(int8_t x, int8_t y)
 {
-	int x = 0;
-	char *tmp;
-	int y;
-	int new_enemyes;
+	int8_t count_friends;
+	int8_t i;
+	int8_t j;
+	int16_t sum;
 
-	new_enemyes = 0;
-	get_next_line(0, &tmp);
+	sum = 0;
+	count_friends = 0;
+	i = 0;
+	while (i < g_new_part.x)
+	{
+		j = 0;
+		while (j < g_new_part.y)
+		{
+			if (g_newfigure[i][j] && (((g_field[x + i][y + j] == -1) && ++count_friends > 1) || g_field[x + i][y + j] == -9))
+				return (-1);
+			else if (g_field[x + i][y + j] > -1)
+				sum += g_field[x + i][y + j] * g_newfigure[i][j];
+			j++;
+		}
+		i++;
+	}
+	ft_printf_fd(fd, " at [ %d:%d ] sum %d\n", x, y, sum*count_friends);
+	return count_friends == 1 ? (sum) : (0);
+}
+
+void	search_point()
+{
+	int8_t i;
+	int8_t j;
+	int16_t tmp;
+
+	g_best_sum = INT_MAX;
+	if ((i = g_friend_start.x - g_new_part.x + 1) > 0)
+		;
+	else
+		i = 0;
+//	ft_printf_fd(fd, "++++ %d +++++\n ", __LINE__);
+	while (i <= g_friend_finish.x && (i + g_new_part.x) <= g_mapsize.x)
+	{
+//		ft_printf_fd(fd, "++++ %d good on %d\n ", __LINE__, i);
+		j = (g_friend_start.y - g_new_part.y + 1) > 0 ? g_friend_start.y - g_new_part.y + 1 : 0;
+		while(j <= g_friend_finish.y && (j + g_new_part.y) <= g_mapsize.y)
+		{
+			if ((tmp = valid_sum(i, j)) > 0 && tmp < g_best_sum)
+			{
+				g_best_sum = tmp;
+				g_best_result.x = i;
+				g_best_result.y = j;
+			}
+			j++;
+		}
+		i++;
+	}
+//	ft_printf_fd(fd, "++++ %d +++++\n ", __LINE__);
+	ft_printf_fd(fd, "\t>> spot {%d:%d}\n", g_best_result.x, g_best_result.y);
+}
+
+void	part_definition()
+{
+	int8_t	x;
+	int8_t	y;
+	char 	*tmp;
+
+	x = 0;
+	ft_printf_fd(fd, "++++ %d +++++\n", __LINE__);
+	while (x < g_new_part.x)
+	{
+		if (!get_next_line(fd1, &tmp))
+			exit(ft_printf_fd(fd, "dnlfail %d  on %d +++++\n ", __LINE__, x));
+		y = 0;
+		ft_printf_fd(fd, "{%s} ", tmp);
+		while (y < g_new_part.y)
+		{
+			g_newfigure[x][y] = (int8_t)(tmp[y] == '*');
+			y++;
+		}
+		ft_printf_fd(fd, "%d - done\n", x);
+		x++;
+//		free(tmp);
+	}
+	ft_printf_fd(fd, "++++ %d +++++\n ", __LINE__);
+	print_matr(fd, (float **)g_newfigure, g_new_part.x, g_new_part.y);
+	search_point();
+}
+
+void map_scan(int fd)
+{
+	int8_t	x = 0;
+	char 	*tmp;
+	int8_t	y;
+	int16_t	count;
+
+	count = 0;
+	get_next_line(fd1, &tmp);
 	free(tmp);
-	ft_printf_fd(fd, "<<< %-35s\n", tmp);
-
-	while (x < g_mapsize[0] && get_next_line(0, &tmp))
+	ft_printf_fd(fd, "%-35s\n", tmp);
+	while (x < g_mapsize.x && get_next_line(fd1, &tmp))
 	{
 		y = 0;
 		ft_printf_fd(fd, "%-35s\n", tmp);
-		while (y < g_mapsize[1])
+		while (y < g_mapsize.y)
 		{
 			if (tmp[4 + y] == 'O' || tmp[4 + y] == 'o')
 			{
 				g_field[x][y] = ENEMY;
 				mark_field(x, y);
 			}
-
 			else if (tmp[4 +  y] == 'X' || tmp[4 + y] == 'x')
+			{
 				g_field[x][y] = FRIEND;
+				if (!count++ && (g_friend_start.x = x) >= 0)
+					g_friend_start.y = y;
+				g_friend_finish.x = x;
+				g_friend_finish.y = y;
+			}
 			y++;
 		}
 		x++;
 		free(tmp);
 	}
-	ft_printf_fd(fd, "MATRIX WRITEN\n");
-	print_matr(g_field, fd);
-	return (g_field);
+	print_matr(fd, g_field, g_mapsize.x, g_mapsize.y);
 }
 
 void		first_line(char *line, int fd)
@@ -114,20 +227,27 @@ void		first_line(char *line, int fd)
 		g_dot = (char) 'o';
 	else if (line[10] == '2')
 		g_dot = (char) 'x';
-	get_next_line(0, &tmp);
+	get_next_line(fd1, &tmp);
 	if (ft_strstr(tmp, "Plateau "))
 	{
-		g_mapsize[0] = ft_atoi(&tmp[7]);
-		g_mapsize[1] = ft_atoi(&tmp[8 + ft_num_size(g_mapsize[0])]);
-		g_field = (double **)ft_matrixalloc(g_mapsize[0], g_mapsize[1], sizeof(double));
-		ft_printf_fd(fd, "MATRIX ALLOCATED\n");
-		ft_printf_fd(fd, "MATRIX START\n gxm - %d, gym - %d\n", g_mapsize, g_mapsize[1]);
-		print_matr(g_field, fd);
-		g_field = map_scan(fd);
+		g_mapsize.x = (int8_t) ft_atoi(&tmp[8]);
+		g_mapsize.y = (int8_t) ft_atoi(&tmp[8 + ft_num_size(g_mapsize.x)]);
+		g_field = (float **)ft_matrixalloc(g_mapsize.x, g_mapsize.y, sizeof(float));
+//		ft_printf_fd(fd, "MATRIX START\n gxm - %d, gym - %d\n", g_mapsize[0], g_mapsize[1]);
+//		print_matr(fd);
+		map_scan(fd);
+		free(tmp);
+		get_next_line(fd1, &tmp);
+		g_new_part.x = (int8_t)ft_atoi(&tmp[6]);
+		g_new_part.y = (int8_t)ft_atoi(&tmp[6 + ft_num_size(g_new_part.x)]);
+		g_newfigure = (int32_t **)ft_matrixalloc(100, 100, sizeof(int32_t));
+		part_definition();
+		free(tmp);
 	}
 }
 
-static char	**fillit_parser(int fd)
+
+static void fillit_parser(int fd)
 {
 	char	*line;
 	int		ret;
@@ -136,36 +256,49 @@ static char	**fillit_parser(int fd)
 
 	ret = 0;
 	count = 2;
-	while (count >= 0)
+	while (get_next_line(fd1, &line))
 	{
-		ret += get_next_line(0, &line);
 		ft_printf_fd(fd, "%-35s\t- %d\n", line, ret);
 		if (ft_strstr(line, "$$$ exec p"))
+		{
 			first_line(line, fd);
+			free(line);
+		}
 		else if (ft_strstr(line, "Plateau "))
-			g_field = map_scan(fd);
-		else if (ft_strstr(line, "Piece "))
 		{
-			g_patr[0] = ft_atoi(&line[6]);
-			g_patr[1] = ft_atoi(&line[6 + ft_num_size(g_patr[0])]);
-			count = g_patr[1];
+			map_scan(fd);
+			get_next_line(fd1, &line);
+			g_new_part.x = (int8_t)ft_atoi(&line[6]);
+			g_new_part.y = (int8_t)ft_atoi(&line[6 + ft_num_size(g_new_part.x)]);
+//			g_newfigure = (int32_t **)ft_matrixalloc(g_new_part.x, g_new_part.y, sizeof(int32_t));
+			ft_printf_fd(fd, "part size %d:%d\n", g_new_part.x, g_new_part.y);
+			free(line);
+			part_definition();
 		}
-		if (!count--)
-		{
-			ft_printf_fd(fd, "%c mapsize [%d]x[%d]\npart x%d y%d\n new %d\n", g_dot, g_mapsize[0], g_mapsize[1], g_patr[0], g_patr[1], ret);
-			ft_printf_fd(1, "12 14\n");
-			count++;
-		}
-	}
+		ft_printf("%d %d\n", g_best_result.x, g_best_result.y);
+		g_best_result.x = 0;
+		g_best_result.y = 0;
 
-	return NULL;
+
+//		if (!count--)
+//		{
+//			ft_printf_fd(fd, ">>> start  {%d:%d}\n>>> finish  {%d:%d}\n", g_friend_start.x, g_friend_start.y, g_friend_finish.x, g_friend_finish.y);
+//			ft_printf("12 14\n");
+//		}
+	}
+//	ft_printf_fd(fd, ">>> start  {%d:%d}\n>>> finish  {%d:%d}\n", g_friend_start.x, g_friend_start.y, g_friend_finish.x, g_friend_finish.y);
 }
 
 int		main()
 {
 
+//	if((fd1 = open("ttt.txt", O_RDONLY)) == -1)
+//		return (22);
+	fd1 = 0;
 	fd = open("test.txt", O_RDWR, S_IRWXO);
 	fillit_parser(fd);
+
 	close(fd);
+//	close(fd1);
 	return (0);
 }

@@ -92,10 +92,10 @@ int								format_char(va_list arg, t_format fx, int fd)
 	if (fx.type == 'C' || (fx.type == 'c' && fx.mods == 'l'))
 		ret = ft_putchar_u(print, fd);
 	else
-		write(1, &print, 1);
+		write(fd, &print, 1);
 	if ((MB_CUR_MAX < ft_charlen(print)))
 		ret = -1;
 	while (fx.flag[0] == '-' && (i++ < fx.whidth))
-		write(1, &empty, 1);
+		write(fd, &empty, 1);
 	return (fx.whidth ? fx.whidth : ret);
 }
