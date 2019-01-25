@@ -13,34 +13,33 @@
 #ifndef FILLER_HEADER_H
 # define FILLER_HEADER_H
 
-# define TRUE 1
-# define FALSE 0
 # define ENEMY -9
 # define FRIEND -1
 
-# include <stdbool.h>
 # include "../libft/includes/libftprintf.h"
+# include <stdio.h>
+# include <errno.h>
 
-struct coordinates
+struct	coordinates
 {
 	int8_t x;
 	int8_t y;
 };
 
+struct	coordinates	g_field_size;
+struct	coordinates	g_new_part;
+struct	coordinates	g_friend_start;
+struct	coordinates	g_friend_finish;
+struct	coordinates	g_best_result;
 
+int32_t				**g_field;
 
-struct coordinates	g_mapsize;
-struct coordinates	g_new_part;
-struct coordinates	g_friend_start;
-struct coordinates	g_friend_finish;
-struct coordinates	g_best_result;
+int32_t				**g_newfigure;
+int32_t 			g_best_sum;
 
-float **g_field;
-int32_t	**g_newfigure;
-float g_best_sum;
+char				g_dot;
 
-char	g_dot;
-
-int 	fd;
-int 	fd1;
+int 				err_log;
+//int 				fd;
+int 				fd1;
 #endif
