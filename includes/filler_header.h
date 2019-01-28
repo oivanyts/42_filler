@@ -37,9 +37,11 @@ int32_t				**g_field;
 int32_t				**g_newfigure;
 int32_t 			g_best_sum;
 
+void	print_matr(int32_t **matr, int8_t matr_x, int8_t matr_y);
+
 char				g_dot;
 
 int 				err_log;
-//int 				fd;
+int 				fd;
 int 				fd1;
 #endif
