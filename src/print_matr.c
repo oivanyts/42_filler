@@ -1,7 +1,7 @@
 
 #include "../includes/filler_header.h"
 
-void	print_matr(int32_t **matr, int8_t matr_x, int8_t matr_y)
+void	print_matr(TFIELD **matr, int8_t matr_x, int8_t matr_y)
 {
 	int i = 0;
 	int	j;

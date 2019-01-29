@@ -19,7 +19,8 @@
 # include "../libft/includes/libftprintf.h"
 # include <stdio.h>
 # include <errno.h>
-
+# include <math.h>
+# define TFIELD float
 struct	coordinates
 {
 	int8_t x;
@@ -31,15 +32,18 @@ struct	coordinates	g_new_part;
 struct	coordinates	g_friend_start;
 struct	coordinates	g_friend_finish;
 struct	coordinates	g_best_result;
+struct	coordinates	g_first_enemy;
 
-int32_t				**g_field;
-
+TFIELD				**g_field;
+TFIELD				**g_farest;
+TFIELD				g_how_far;
 int32_t				**g_newfigure;
 int32_t 			g_best_sum;
 
-void	print_matr(int32_t **matr, int8_t matr_x, int8_t matr_y);
+void	print_matr(TFIELD **matr, int8_t matr_x, int8_t matr_y);
 
 char				g_dot;
+
 
 int 				err_log;
 int 				fd;
