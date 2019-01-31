@@ -3,10 +3,11 @@ project(filler C)
 
 set(CMAKE_C_STANDARD 99)
 
-set(CMAKE_C_FLAGS "-Wextra -Werror -Wall")
+set(CMAKE_C_FLAGS "-Wextra -Werror -Wall -O3")
 
 set(SOURCE_FILES
         src/filler.c
+        src/part_definition.c
         includes/filler_header.h
         )
 add_executable(bot.filler ${SOURCE_FILES})

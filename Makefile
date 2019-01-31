@@ -23,6 +23,7 @@ LIBFT_FLAGS   := -lft -L $(LIB_DIR)
 
 SRC      	+= filler.c
 SRC      	+= print_matr.c
+SRC      	+= part_definition.c
 
 CC		    := clang
 
@@ -39,7 +40,7 @@ OBJ 		= $(addprefix $(OBJ_DIR), $(SRC:.c=.o))
 all: $(NAME)
 
 $(NAME): $(OBJ) $(LIBFT)
-	gcc obj/filler.o obj/print_matr.o  -lft -L libft -o $(NAME)
+	@gcc obj/filler.o obj/part_definition.o -lft -L libft -o $(NAME)
 
 $(OBJ): | $(OBJ_DIR)
 

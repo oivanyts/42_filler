@@ -15,37 +15,28 @@
 
 # define ENEMY -9
 # define FRIEND -1
+# define VMFD 0
 
 # include "../libft/includes/libftprintf.h"
 # include <stdio.h>
 # include <errno.h>
-# include <math.h>
-# define TFIELD float
-struct	coordinates
+
+struct	s_coordinates
 {
 	int8_t x;
 	int8_t y;
 };
 
-struct	coordinates	g_field_size;
-struct	coordinates	g_new_part;
-struct	coordinates	g_friend_start;
-struct	coordinates	g_friend_finish;
-struct	coordinates	g_best_result;
-struct	coordinates	g_first_enemy;
+struct s_coordinates	g_map_size;
+struct s_coordinates	g_part_size;
+struct s_coordinates	g_uplimit;
+struct s_coordinates	g_botlimit;
 
-TFIELD				**g_field;
-TFIELD				**g_farest;
-TFIELD				g_how_far;
-int32_t				**g_newfigure;
-int32_t 			g_best_sum;
+int32_t					**g_newfigure;
+int32_t					g_best_sum;
+char					g_dot;
 
-void	print_matr(TFIELD **matr, int8_t matr_x, int8_t matr_y);
+void					part_definition(char *tmp, int **g_field);
+void					free_fields(int **field);
 
-char				g_dot;
-
-
-int 				err_log;
-int 				fd;
-int 				fd1;
 #endif
